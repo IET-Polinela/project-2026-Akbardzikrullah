@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<!-- TOTAL -->
+<div class="alert alert-primary">
+    Total Laporan: <strong>{{ total_reports }}</strong>
+</div>
+
+<div class="row">
+
+    <!-- BAR CHART -->
+    <div class="col-md-6">
+        <div class="card p-3 mb-4">
+            <h5 class="text-center">Status (Bar Chart)</h5>
+            <div style="height:300px;">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIE CHART -->
+    <div class="col-md-6">
+        <div class="card p-3 mb-4">
+            <h5 class="text-center">Status (Pie Chart)</h5>
+            <div style="height:300px;">
+                <canvas id="statusPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- CATEGORY -->
+<div class="card p-3">
+    <h5 class="text-center">Kategori Laporan</h5>
+    <div style="height:300px;">
+        <canvas id="categoryChart"></canvas>
+    </div>
+</div>
+
+<!-- CHART JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+    // ================= STATUS =================
+    const statusLabels = [];
+    const statusData = [];
+    const statusColors = [];
+
+    {% for item in status_data %}
+        statusLabels.push("{{ item.status }}");
+        statusData.push({{ item.total }});
+
+        if ("{{ item.status }}" === "REPORTED") {
+            statusColors.push("#6c757d");
+        } else if ("{{ item.status }}" === "VERIFIED") {
+            statusColors.push("#0dcaf0");
+        } else if ("{{ item.status }}" === "IN_PROGRESS") {
+            statusColors.push("#ffc107");
+        } else if ("{{ item.status }}" === "RESOLVED") {
+            statusColors.push("#198754");
+        } else {
+            statusColors.push("#0d6efd");
+        }
+    {% endfor %}
+
+    // BAR CHART
+    const barCtx = document.getElementById('statusChart');
+    if (barCtx) {
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    label: 'Jumlah Status',
+                    data: statusData,
+                    backgroundColor: statusColors
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    // PIE CHART
+    const pieCtx = document.getElementById('statusPieChart');
+    if (pieCtx) {
+        new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: statusLabels,
+                datasets: [{
+                    data: statusData,
+                    backgroundColor: statusColors
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+    // ================= CATEGORY =================
+    const categoryLabels = [
+        {% for item in category_data %}
+            "{{ item.category }}",
+        {% endfor %}
+    ];
+
+    const categoryData = [
+        {% for item in category_data %}
+            {{ item.total }},
+        {% endfor %}
+    ];
+
+    const catCtx = document.getElementById('categoryChart');
+    if (catCtx) {
+        new Chart(catCtx, {
+            type: 'pie',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryData,
+                    backgroundColor: [
+                        "#007bff",
+                        "#6610f2",
+                        "#fd7e14",
+                        "#20c997",
+                        "#e83e8c",
+                        "#6f42c1",
+                        "#198754",
+                        "#dc3545"
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+
+});
+</script>
+
+{% endblock %}

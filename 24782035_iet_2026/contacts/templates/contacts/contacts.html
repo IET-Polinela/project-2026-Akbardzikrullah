@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <!-- TITLE -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold">Contact Us</h1>
+        <p class="text-muted">Hubungi kami untuk pertanyaan atau saran</p>
+    </div>
+
+    <div class="row">
+
+        <!-- INFO -->
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-sm p-4 h-100">
+                <h4>Informasi Kontak</h4>
+                <p><i class="bi bi-envelope"></i> akbardzikrullah20@gmail.com</p>
+                <p><i class="bi bi-phone"></i> 08984293918</p>
+                <p><i class="bi bi-geo-alt"></i> Kemiling, Bandar Lampung</p>
+            </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="col-md-7">
+            <div class="card shadow-sm p-4">
+                <h4>Kirim Pesan</h4>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <input type="text" name="nama" class="form-control" placeholder="Nama" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="email" name="email" class="form-control" placeholder="Email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <textarea name="pesan" class="form-control" rows="4" placeholder="Pesan" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        Kirim Pesan
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
