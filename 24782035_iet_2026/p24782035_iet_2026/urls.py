@@ -1,26 +1,24 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.contrib.auth.views import LoginView, LogoutView
-from main_app.views import home  
+from main_app.views import home
+from usermanagement_24782035.views import login_view, logout_view, register
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # 🔐 AUTH
-    path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    # 🔐 AUTH (PAKAI CUSTOM)
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('register/', register, name='register'),
 
     # 🏠 HOME
     path('', home, name='home'),
 
-    # 📄 FITUR UTAMA
+    # 📄 FITUR
     path('reports/', include('main_app.urls')),
     path('about/', include('about.urls')),
     path('contacts/', include('contacts.urls')),
 
-    # 👤 USER
-    path('', include('usermanagement_24782035.urls')),
-
-    # 📊 DASHBOARD 
+    # 📊 DASHBOARD
     path('dashboard/', include('dashboard_24782035.urls')),
 ]

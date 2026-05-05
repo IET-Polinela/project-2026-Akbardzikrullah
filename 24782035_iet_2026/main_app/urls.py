@@ -5,7 +5,9 @@ from .views import (
     ReportCreateView,
     ReportUpdateView,
     ReportDeleteView,
-    ReportUpdateStatusView
+    ReportUpdateStatusView,
+    search_reports,
+    report_detail_api
 )
 
 app_name = 'main_app'
@@ -17,4 +19,8 @@ urlpatterns = [
     path('edit/<int:pk>/', ReportUpdateView.as_view(), name='report_update'),
     path('delete/<int:pk>/', ReportDeleteView.as_view(), name='report_delete'),
     path('update-status/<int:pk>/', ReportUpdateStatusView.as_view(), name='update_status'),
+
+    # 🔥 AJAX
+    path('search/', search_reports, name='search_reports'),
+    path('api/detail/<int:pk>/', report_detail_api, name='report_detail_api'),
 ]

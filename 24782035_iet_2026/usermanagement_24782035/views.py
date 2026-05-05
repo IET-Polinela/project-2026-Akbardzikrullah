@@ -3,6 +3,8 @@ from django.contrib import messages
 from .forms import RegisterForm
 from django.contrib.auth import authenticate, login, logout
 
+
+# ✅ REGISTER
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -12,7 +14,6 @@ def register(request):
             user.save()
 
             login(request, user)
-
             messages.success(request, "✅ Registrasi berhasil! Kamu sudah login.")
             return redirect('home')
     else:
@@ -20,23 +21,29 @@ def register(request):
 
     return render(request, 'registration/register.html', {'form': form})
 
+
+# ✅ LOGIN
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
-            messages.success(request, "Login berhasil!")  # 👈 TAMBAH INI
+            messages.success(request, "✅ Login berhasil!")
             return redirect('home')
         else:
-            messages.error(request, "Username atau password salah!")
+            messages.error(request, "❌ Username atau password salah!")
 
-    return render(request, 'login.html')
+    return render(request, 'registration/login.html')  # 🔥 FIX PATH
 
+
+# ✅ LOGOUT
 def logout_view(request):
-    logout(request)
-    messages.success(request, "Logout berhasil!")  # 👈 TAMBAH INI
-    return redirect('login')
+    if request.method == 'POST':
+        logout(request)
+        messages.success(request, "Logout berhasil!")
+        return redirect('/')  # 🔥 langsung ke home URL
+    return redirect('/')
