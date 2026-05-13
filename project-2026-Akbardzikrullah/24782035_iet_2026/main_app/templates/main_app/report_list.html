@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Daftar Laporan</h2>
+
+    <input type="text" id="searchInput" class="form-control mb-3" placeholder="🔍 Cari laporan...">
+
+    <a href="{% url 'main_app:report_create' %}" class="btn btn-primary mb-3">
+        Tambah Laporan
+    </a>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Judul</th>
+                    <th>Kategori</th>
+                    <th>Lokasi</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody id="reportTableBody">
+                {% include 'main_app/_report_rows.html' %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="detailModal">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+
+        <h5>Detail Laporan</h5>
+
+        <p><b>Judul:</b> <span id="d-title"></span></p>
+        <p><b>Kategori:</b> <span id="d-category"></span></p>
+        <p><b>Lokasi:</b> <span id="d-location"></span></p>
+        <p><b>Status:</b> <span id="d-status"></span></p>
+        <p><b>Deskripsi:</b> <span id="d-description"></span></p>
+
+    </div>
+  </div>
+</div>
+
+<script>
+let timeout = null;
+
+// 🔍 SEARCH
+document.getElementById("searchInput").addEventListener("keyup", function () {
+
+    clearTimeout(timeout);
+
+    timeout = setTimeout(() => {
+
+        fetch(`/reports/search/?q=${this.value}`)
+        .then(res => res.json())
+        .then(data => {
+            console.log("SEARCH:", data); // 🔥 WAJIB
+            document.getElementById("reportTableBody").innerHTML = data.html;
+        });
+
+    }, 300);
+});
+
+
+// 📦 MODAL
+document.addEventListener("click", function(e) {
+
+    if (e.target.classList.contains("btn-detail")) {
+
+        const id = e.target.dataset.id;
+
+        fetch(`/reports/api/detail/${id}/`)
+        .then(res => res.json())
+        .then(data => {
+
+            console.log("DETAIL:", data); // 🔥 WAJIB
+
+            document.getElementById("d-title").innerText = data.title;
+            document.getElementById("d-category").innerText = data.category;
+            document.getElementById("d-location").innerText = data.location;
+            document.getElementById("d-description").innerText = data.description;
+
+            let badge = '';
+            if (data.status === 'REPORTED') badge = '<span class="badge bg-secondary">Reported</span>';
+            if (data.status === 'VERIFIED') badge = '<span class="badge bg-info">Verified</span>';
+            if (data.status === 'IN_PROGRESS') badge = '<span class="badge bg-warning">In Progress</span>';
+            if (data.status === 'RESOLVED') badge = '<span class="badge bg-success">Resolved</span>';
+
+            document.getElementById("d-status").innerHTML = badge;
+
+            new bootstrap.Modal(document.getElementById('detailModal')).show();
+        });
+    }
+
+});
+</script>
+
+{% endblock %}
