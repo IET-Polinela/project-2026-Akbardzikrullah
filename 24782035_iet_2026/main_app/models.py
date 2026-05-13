@@ -1,14 +1,14 @@
 from django.db import models
+from django.conf import settings  # Penting untuk mengambil model User yang aktif
 
 
 STATUS_CHOICES = [
+    ('DRAFT', 'Draft'),
     ('REPORTED', 'Reported'),
     ('VERIFIED', 'Verified'),
     ('IN_PROGRESS', 'In Progress'),
     ('RESOLVED', 'Resolved'),
 ]
-
-status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='REPORTED')
 
 class Report(models.Model):
     title = models.CharField(max_length=200)
@@ -16,13 +16,24 @@ class Report(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=200)
 
+
+    reporter = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='reports',
+        null=True,
+        blank=True
+    )
+
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default='REPORTED'
     )
 
+    
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title

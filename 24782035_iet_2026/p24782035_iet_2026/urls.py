@@ -21,4 +21,8 @@ urlpatterns = [
 
     # 📊 DASHBOARD
     path('dashboard/', include('dashboard_24782035.urls')),
+
+    # 🌐 REST API (Lab Session 9)
+    # Menghubungkan rute API menggunakan include dengan path dasar api/
+    path('api/', include('main_app.api_urls')),
 ]
