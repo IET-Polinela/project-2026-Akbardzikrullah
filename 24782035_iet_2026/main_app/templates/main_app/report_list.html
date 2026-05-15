@@ -1,48 +1,142 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
+<style>
+    /* 🔥 EFEK 3D UNTUK CARD TABEL */
+    .card-3d {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.08); /* Bayangan lembut */
+        background: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card-3d:hover {
+        transform: translateY(-4px); 
+        box-shadow: 0 12px 25px rgba(13, 110, 253, 0.12);
+    }
 
-    <h2>Daftar Laporan</h2>
+    /* 🔥 HEADER TABEL GRADASI ELEGAN */
+    .table-custom-header th {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%) !important;
+        color: white !important;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-bottom: none;
+        padding: 16px 10px;
+    }
+    
+    /* Biar sudut atas tabel ikut melengkung ngikutin card */
+    .table-custom-header th:first-child { border-top-left-radius: 12px; }
+    .table-custom-header th:last-child { border-top-right-radius: 12px; }
 
-    <input type="text" id="searchInput" class="form-control mb-3" placeholder="🔍 Cari laporan...">
+    /* 🔥 FIX KOLOM AKSI (Anti Bablas ke Kanan) */
+    #reportTableBody td:last-child {
+        text-align: center;
+        vertical-align: middle;
+        width: 140px; /* Lebar dibatasi */
+        min-width: 140px;
+    }
+    
+    /* Memaksa elemen pembungkus tombol (div/btn-group) untuk mematuhi batas dan turun baris */
+    #reportTableBody td:last-child > * {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+        justify-content: center !important;
+    }
 
-    <a href="{% url 'main_app:report_create' %}" class="btn btn-primary mb-3">
-        Tambah Laporan
-    </a>
+    /* Ukuran tombol dikecilkan sedikit biar muat rapi */
+    #reportTableBody td:last-child .btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        margin: 0 !important; /* Margin bawaan dihapus karena udah pake gap */
+        flex: 1 1 auto; /* Tombol otomatis menyesuaikan ruang kosong */
+    }
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Judul</th>
-                    <th>Kategori</th>
-                    <th>Lokasi</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
+    /* Efek hover baris tabel */
+    .table-hover tbody tr:hover {
+        background-color: #f1f6ff;
+    }
 
-            <tbody id="reportTableBody">
-                {% include 'main_app/_report_rows.html' %}
-            </tbody>
-        </table>
+    .search-box {
+        max-width: 350px;
+    }
+
+    /* 🔥 FIX MODAL TEKS BABLAS */
+    .modal-detail-table {
+        table-layout: fixed;
+        width: 100%;
+    }
+    .modal-detail-table td {
+        white-space: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+</style>
+
+<div class="container mt-4 mb-5">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <h2 class="fw-bold text-primary mb-0"><i class="bi bi-layers-half me-2"></i>Daftar Laporan</h2>
+        
+        <div class="d-flex flex-column flex-sm-row gap-2 search-box w-100 justify-content-md-end">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchInput" class="form-control border-start-0 ps-0" placeholder="Cari laporan...">
+            </div>
+            <a href="{% url 'main_app:report_create' %}" class="btn btn-primary fw-bold text-nowrap shadow-sm" style="border-radius: 8px;">
+                <i class="bi bi-plus-lg me-1"></i> Tambah
+            </a>
+        </div>
+    </div>
+
+    <div class="card card-3d">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-custom-header">
+                        <tr>
+                            <th class="ps-4">Judul</th>
+                            <th>Kategori</th>
+                            <th>Lokasi</th>
+                            <th>Status</th>
+                            <th class="text-center pe-4">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="reportTableBody">
+                        {% include 'main_app/_report_rows.html' %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
 </div>
 
-<!-- MODAL -->
-<div class="modal fade" id="detailModal">
-  <div class="modal-dialog">
-    <div class="modal-content p-3">
-
-        <h5>Detail Laporan</h5>
-
-        <p><b>Judul:</b> <span id="d-title"></span></p>
-        <p><b>Kategori:</b> <span id="d-category"></span></p>
-        <p><b>Lokasi:</b> <span id="d-location"></span></p>
-        <p><b>Status:</b> <span id="d-status"></span></p>
-        <p><b>Deskripsi:</b> <span id="d-description"></span></p>
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+        
+        <div class="modal-header bg-primary text-white border-0" style="border-radius: 16px 16px 0 0;">
+            <h5 class="modal-title fw-bold"><i class="bi bi-info-circle me-2"></i>Detail Laporan</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body p-4">
+            <table class="table table-borderless table-sm mb-0 modal-detail-table">
+                <tr><td width="30%" class="text-muted">Judul</td><td width="70%" class="fw-bold" id="d-title"></td></tr>
+                <tr><td class="text-muted">Kategori</td><td id="d-category"></td></tr>
+                <tr><td class="text-muted">Lokasi</td><td id="d-location"></td></tr>
+                <tr><td class="text-muted">Status</td><td id="d-status"></td></tr>
+                <tr><td class="text-muted align-top">Deskripsi</td><td id="d-description"></td></tr>
+            </table>
+        </div>
+        
+        <div class="modal-footer bg-light border-0" style="border-radius: 0 0 16px 16px;">
+            <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+        </div>
 
     </div>
   </div>
@@ -53,34 +147,26 @@ let timeout = null;
 
 // 🔍 SEARCH
 document.getElementById("searchInput").addEventListener("keyup", function () {
-
     clearTimeout(timeout);
-
     timeout = setTimeout(() => {
-
         fetch(`/reports/search/?q=${this.value}`)
         .then(res => res.json())
         .then(data => {
-            console.log("SEARCH:", data); // 🔥 WAJIB
+            console.log("SEARCH:", data);
             document.getElementById("reportTableBody").innerHTML = data.html;
         });
-
     }, 300);
 });
 
-
 // 📦 MODAL
 document.addEventListener("click", function(e) {
-
-    if (e.target.classList.contains("btn-detail")) {
-
-        const id = e.target.dataset.id;
+    if (e.target.closest(".btn-detail")) { 
+        const id = e.target.closest(".btn-detail").dataset.id;
 
         fetch(`/reports/api/detail/${id}/`)
         .then(res => res.json())
         .then(data => {
-
-            console.log("DETAIL:", data); // 🔥 WAJIB
+            console.log("DETAIL:", data);
 
             document.getElementById("d-title").innerText = data.title;
             document.getElementById("d-category").innerText = data.category;
@@ -88,18 +174,16 @@ document.addEventListener("click", function(e) {
             document.getElementById("d-description").innerText = data.description;
 
             let badge = '';
-            if (data.status === 'REPORTED') badge = '<span class="badge bg-secondary">Reported</span>';
-            if (data.status === 'VERIFIED') badge = '<span class="badge bg-info">Verified</span>';
-            if (data.status === 'IN_PROGRESS') badge = '<span class="badge bg-warning">In Progress</span>';
-            if (data.status === 'RESOLVED') badge = '<span class="badge bg-success">Resolved</span>';
+            if (data.status === 'REPORTED') badge = '<span class="badge bg-secondary px-3 py-2 rounded-pill">Reported</span>';
+            if (data.status === 'VERIFIED') badge = '<span class="badge bg-info px-3 py-2 rounded-pill">Verified</span>';
+            if (data.status === 'IN_PROGRESS') badge = '<span class="badge bg-warning px-3 py-2 rounded-pill text-dark">In Progress</span>';
+            if (data.status === 'RESOLVED') badge = '<span class="badge bg-success px-3 py-2 rounded-pill">Resolved</span>';
 
             document.getElementById("d-status").innerHTML = badge;
 
             new bootstrap.Modal(document.getElementById('detailModal')).show();
         });
     }
-
 });
 </script>
-
 {% endblock %}
