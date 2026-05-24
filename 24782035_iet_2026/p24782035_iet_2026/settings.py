@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt',
 
     # APP KAMU
     'main_app',
@@ -92,7 +93,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CUSTOM USER MODEL
 AUTH_USER_MODEL = 'usermanagement_24782035.CustomUser'
 
-# LOGIN & LOGOUT REDIRECT (FIX ERROR 404)
-LOGIN_REDIRECT_URL = '/'
+# LOGIN & LOGOUT REDIRECT
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/reports/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}

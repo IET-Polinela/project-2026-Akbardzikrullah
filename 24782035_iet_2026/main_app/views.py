@@ -12,17 +12,31 @@ from .forms import ReportForm
 
 
 def is_admin(user):
-    return user.is_authenticated and user.is_admin
+    return user.is_authenticated and getattr(user, 'is_admin', False)
 
 
 def home(request):
     return render(request, 'main_app/home.html')
 
 
+# 1. LIST: Admin exclude DRAFT, Citizen = Admin + DRAFT miliknya
 class ReportListView(ListView):
     model = Report
     template_name = 'main_app/report_list.html'
     context_object_name = 'reports'
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user.is_authenticated:
+            # Tamu cuma bisa lihat yang bukan draft
+            return Report.objects.exclude(status='DRAFT')
+        
+        if is_admin(user):
+            # Admin exclude DRAFT
+            return Report.objects.exclude(status='DRAFT')
+        else:
+            # Citizen lihat punya dia (termasuk draft) ATAU laporan publik (bukan draft)
+            return Report.objects.filter(Q(reporter=user) | ~Q(status='DRAFT'))
 
 
 class ReportDetailView(DetailView):
@@ -30,6 +44,7 @@ class ReportDetailView(DetailView):
     template_name = 'main_app/report_detail.html'
 
 
+# 2. CREATE: Citizen yang bikin
 class ReportCreateView(CreateView):
     model = Report
     form_class = ReportForm
@@ -37,12 +52,18 @@ class ReportCreateView(CreateView):
     success_url = reverse_lazy('main_app:report_list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not is_admin(request.user):
-            messages.error(request, "❌ Hanya admin yang boleh menambahkan laporan!")
+        if not request.user.is_authenticated:
+            messages.error(request, "❌ Anda harus login untuk membuat laporan!")
             return redirect('main_app:report_list')
         return super().dispatch(request, *args, **kwargs)
 
+    def form_valid(self, form):
+        # Otomatis isi kolom reporter pakai user yang lagi login!
+        form.instance.reporter = self.request.user
+        return super().form_valid(form)
 
+
+# 3. EDIT & DELETE: Cuma Citizen pemilik laporan (Admin gak boleh)
 class ReportUpdateView(UpdateView):
     model = Report
     form_class = ReportForm
@@ -50,8 +71,10 @@ class ReportUpdateView(UpdateView):
     success_url = reverse_lazy('main_app:report_list')
 
     def dispatch(self, request, *args, **kwargs):
-        if not is_admin(request.user):
-            messages.error(request, "❌ Hanya admin yang bisa mengedit laporan!")
+        report = self.get_object()
+        # Kalau yang login bukan reporternya (pemilik aslinya), tolak!
+        if request.user != report.reporter:
+            messages.error(request, "❌ Anda tidak berhak mengedit laporan ini!")
             return redirect('main_app:report_list')
         return super().dispatch(request, *args, **kwargs)
 
@@ -61,7 +84,16 @@ class ReportDeleteView(DeleteView):
     template_name = 'main_app/delete_confirm.html'
     success_url = reverse_lazy('main_app:report_list')
 
+    def dispatch(self, request, *args, **kwargs):
+        report = self.get_object()
+        # Kalau yang login bukan reporternya (pemilik aslinya), tolak!
+        if request.user != report.reporter:
+            messages.error(request, "❌ Anda tidak berhak menghapus laporan ini!")
+            return redirect('main_app:report_list')
+        return super().dispatch(request, *args, **kwargs)
 
+
+# 4. KHUSUS ADMIN: Cuma Ngubah Status Aja
 class ReportUpdateStatusView(View):
     def post(self, request, pk):
         if not is_admin(request.user):
@@ -83,11 +115,20 @@ class ReportUpdateStatusView(View):
         return redirect('main_app:report_list')
 
 
-# 🔍 LIVE SEARCH
+# 🔍 LIVE SEARCH (Filter disamakan dengan ListView)
 def search_reports(request):
     query = request.GET.get('q', '')
+    user = request.user
 
-    reports = Report.objects.filter(
+    # Aturan filter data disamakan biar pas nyari nggak bocor
+    if not user.is_authenticated:
+        base_qs = Report.objects.exclude(status='DRAFT')
+    elif is_admin(user):
+        base_qs = Report.objects.exclude(status='DRAFT')
+    else:
+        base_qs = Report.objects.filter(Q(reporter=user) | ~Q(status='DRAFT'))
+
+    reports = base_qs.filter(
         Q(title__icontains=query) |
         Q(category__icontains=query) |
         Q(location__icontains=query)

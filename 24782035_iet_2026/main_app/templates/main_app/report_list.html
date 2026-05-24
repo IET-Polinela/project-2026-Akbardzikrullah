@@ -174,8 +174,9 @@ document.addEventListener("click", function(e) {
             document.getElementById("d-description").innerText = data.description;
 
             let badge = '';
+            if (data.status === 'DRAFT') badge = '<span class="badge bg-light px-3 py-2 border border-secondary text-dark rounded-pill">Draft</span>';
             if (data.status === 'REPORTED') badge = '<span class="badge bg-secondary px-3 py-2 rounded-pill">Reported</span>';
-            if (data.status === 'VERIFIED') badge = '<span class="badge bg-info px-3 py-2 rounded-pill">Verified</span>';
+            if (data.status === 'VERIFIED') badge = '<span class="badge bg-info px-3 py-2 rounded-pill text-dark">Verified</span>';
             if (data.status === 'IN_PROGRESS') badge = '<span class="badge bg-warning px-3 py-2 rounded-pill text-dark">In Progress</span>';
             if (data.status === 'RESOLVED') badge = '<span class="badge bg-success px-3 py-2 rounded-pill">Resolved</span>';
 

@@ -3,6 +3,10 @@ from django.urls import path, include
 from main_app.views import home
 from usermanagement_24782035.views import login_view, logout_view, register
 
+# 🔥 Import JWT & Register API Views (Lab 10)
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from usermanagement_24782035.api_views import RegisterView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -25,4 +29,12 @@ urlpatterns = [
     # 🌐 REST API (Lab Session 9)
     # Menghubungkan rute API menggunakan include dengan path dasar api/
     path('api/', include('main_app.api_urls')),
+]
+
+# 🔑 Endpoint JWT Token & Register Citizen (Lab Session 10)
+urlpatterns += [
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # 👇 Ini dia tambahan endpoint buat register via API
+    path('api/register/', RegisterView.as_view(), name='api_register'), 
 ]

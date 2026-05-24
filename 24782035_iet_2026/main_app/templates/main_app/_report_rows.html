@@ -4,9 +4,10 @@
     <td>{{ report.category }}</td>
     <td>{{ report.location }}</td>
 
-    <!-- STATUS -->
     <td>
-        {% if report.status == 'REPORTED' %}
+        {% if report.status == 'DRAFT' %}
+            <span class="badge bg-light text-dark border border-secondary">Draft</span>
+        {% elif report.status == 'REPORTED' %}
             <span class="badge bg-secondary">Reported</span>
         {% elif report.status == 'VERIFIED' %}
             <span class="badge bg-info text-dark">Verified</span>
@@ -17,7 +18,6 @@
         {% endif %}
     </td>
 
-    <!-- AKSI (FIX TIDAK NUMPUK) -->
     <td>
         <div class="d-flex flex-nowrap align-items-center gap-1">
 
@@ -45,6 +45,9 @@
                     </form>
                 {% endif %}
 
+            {% endif %}
+
+            {% if user.is_authenticated and request.user == report.reporter %}
                 <a href="{% url 'main_app:report_update' report.id %}" class="btn btn-warning btn-sm">
                     Edit
                 </a>
@@ -52,11 +55,9 @@
                 <a href="{% url 'main_app:report_delete' report.id %}" class="btn btn-danger btn-sm">
                     Hapus
                 </a>
-
             {% endif %}
 
-            <!-- DETAIL -->
-            <button class="btn btn-info btn-sm btn-detail" data-id="{{ report.id }}">
+            <button class="btn btn-info btn-sm text-white btn-detail" data-id="{{ report.id }}">
                 Detail
             </button>
 

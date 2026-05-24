@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings  # Penting untuk mengambil model User yang aktif
 
-
 STATUS_CHOICES = [
     ('DRAFT', 'Draft'),
     ('REPORTED', 'Reported'),
@@ -16,7 +15,6 @@ class Report(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=200)
 
-
     reporter = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -28,9 +26,8 @@ class Report(models.Model):
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='REPORTED'
+        default='DRAFT' 
     )
-
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
