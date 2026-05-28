@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders', # 🔥 BARU: Tambahkan corsheaders di sini
 
     # APP KAMU
     'main_app',
@@ -29,6 +30,7 @@ INSTALLED_APPS = [
 
 # MIDDLEWARE
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', # 🔥 BARU: Wajib diletakkan paling atas!
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -107,3 +109,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+# 🔥 BARU: Konfigurasi akses CORS (Ditaruh di paling bawah)
+# CORS Settings
+CORS_ALLOW_ALL_ORIGINS = True # Mengizinkan semua domain untuk mengakses API
