@@ -14,38 +14,64 @@ const routes = {
     '#dashboard': `
         <div class="row g-4">
             <aside class="col-12 col-lg-3">
-                <div class="card border-0 p-3 shadow-sm sticky-top" style="top: 20px;">
-                    <button class="btn btn-primary btn-lg w-100 fw-bold mb-3"><i class="bi bi-plus-circle-fill me-2"></i>Laporan Baru</button>
+                <div class="card border-0 p-3 shadow-sm sticky-top" style="top: 80px;">
+                    <button class="btn btn-primary btn-lg w-100 fw-bold mb-3" onclick="openNewReportModal()">
+                        <i class="bi bi-plus-circle-fill me-2"></i>Laporan Baru
+                    </button>
+                    
+                    <div class="card border-0 shadow-sm mt-3">
+                        <div class="card-header bg-white fw-bold">Rekap Status</div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Draft <span class="badge bg-secondary rounded-pill" id="count-draft">0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Diproses <span class="badge bg-warning text-dark rounded-pill" id="count-inprogress">0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Selesai <span class="badge bg-success rounded-pill" id="count-resolved">0</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </aside>
-            <section class="col-12 col-lg-6">
-                <div class="card border-0 p-5 shadow-sm text-center text-muted border-dashed" style="border: 2px dashed #dee2e6;">
-                    <i class="bi bi-inbox fs-1"></i><h5 class="mt-3">Selamat Datang!</h5>
-                    <p class="small">Koneksi API untuk data laporan akan diimplementasikan pada Lab 12.</p>
-                </div>
+            
+            <section class="col-12 col-lg-9">
+                <ul class="nav nav-tabs mb-4">
+                    <li class="nav-item">
+                        <a class="nav-link active text-dark fw-bold" href="#" onclick="loadDashboardData('my_reports', 1); return false;">Laporan Saya</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-muted" href="#" onclick="loadDashboardData('feed', 1); return false;">Feed Kota</a>
+                    </li>
+                </ul>
+                <div id="listContainer" class="row mt-3"></div>
+                <div id="paginationContainer" class="mt-4"></div>
             </section>
-            <aside class="col-lg-3 d-none d-lg-block">
-                <div class="card border-0 p-3 shadow-sm sticky-top" style="top: 20px;">
-                    <h6 class="fw-bold"><i class="bi bi-info-circle-fill text-primary me-2"></i>Pengumuman</h6>
-                </div>
-            </aside>
         </div>
     `
 };
 
 function handleRouting() {
-    // Ambil hash dari URL (misal: #dashboard), kalau kosong default ke #login
-    const hash = window.location.hash || '#login'; 
+    const hash = window.location.hash || '#login';
+    const appContent = document.getElementById('app-content');
     
-    // Suntikkan kode HTML dari variabel routes ke dalam tag <main id="app-content"> di index.html
-    document.getElementById('app-content').innerHTML = routes[hash] || routes['#login'];
+    if (hash === '#dashboard' && !localStorage.getItem('access_token')) {
+        window.location.hash = '#login';
+        return;
+    }
+
+    if (appContent) appContent.innerHTML = routes[hash] || routes['#login'];
     
-    // Kalau user lagi di halaman login, jalankan fungsi buat nangkep event submit form
+    // Update menu navigasi (logout button)
+    if (typeof updateNavbar === 'function') updateNavbar();
+
     if (hash === '#login' && typeof setupLoginForm === 'function') {
         setupLoginForm();
+    } else if (hash === '#dashboard' && typeof loadDashboardData === 'function') {
+        setTimeout(() => loadDashboardData('my_reports', 1), 100);
     }
 }
 
-// Pantau kalau URL berubah atau halaman baru dimuat, langsung jalankan handleRouting
 window.addEventListener('hashchange', handleRouting);
 window.addEventListener('DOMContentLoaded', handleRouting);

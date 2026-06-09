@@ -2,18 +2,23 @@ from rest_framework import serializers
 from .models import Report
 
 class ReportSerializer(serializers.ModelSerializer):
-    
-    reporter = serializers.SerializerMethodField()
+    # === TAMBAHAN BARU: field is_owner ===
+    is_owner = serializers.SerializerMethodField()
+    reporter_name = serializers.CharField(source='reporter.username', read_only=True)
 
     class Meta:
-        model = Report
+        model  = Report
         fields = [
-            'id', 'title', 'category', 'description', 
-            'location', 'status', 'reporter', 
-            'created_at', 'updated_at'
+            'id', 'title', 'category', 'description',
+            'location', 'status', 'reporter', 'reporter_name',
+            'created_at', 'updated_at',
+            'is_owner',      # Tambahkan is_owner ke fields
         ]
+        read_only_fields = ['reporter', 'is_owner']
 
-    # Fungsi ini akan otomatis dipanggil oleh field 'reporter' di atas
-    def get_reporter(self, obj):
-        # Setiap kali API dipanggil, nama pelapor akan selalu muncul sebagai teks ini
-        return "Warga Anonim"
+    # Method ini otomatis dipanggil saat is_owner di-serialize
+    def get_is_owner(self, obj):
+        request = self.context.get('request')
+        if request and request.user and request.user.is_authenticated:
+            return obj.reporter == request.user
+        return False
