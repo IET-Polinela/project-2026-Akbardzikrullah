@@ -1,10 +1,9 @@
-name: Deploy Frontend SPA to GitHub Pages
+name: Deploy SPA to GitHub Pages
 
 on:
-  # Akan otomatis berjalan setiap kali ada push ke branch main/master
   push:
-    branches: ["main", "master"]
-  workflow_dispatch:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -13,24 +12,23 @@ permissions:
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
-    runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
-      - name: Upload artifact (Hanya Folder Frontend)
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # UBAH 'frontend' DI BAWAH INI JIKA NAMA FOLDER SPA-NYA BERBEDA
-          path: './smartcity_citizen_spa'
+          path: ./server_smartcity/smartcity_citizen_spa_24782059
 
       - name: Deploy to GitHub Pages
         id: deployment
