@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-%j_c-&4e-fsl%_1c9qbh8dfx3v)$gh-z=l^_#w2lke46-mgnw6'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*'] # 🛠️ UBAHAN 1: Diubah agar bisa diakses oleh server luar 
 
 # APPLICATIONS
 INSTALLED_APPS = [
@@ -40,7 +40,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'p24782035_iet_2026.urls'
+ROOT_URLCONF = 'smartcity_app.urls' # 🛠️ UBAHAN 2: Referensi folder diubah ke smartcity_app 
 
 # TEMPLATES
 TEMPLATES = [
@@ -58,7 +58,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'p24782035_iet_2026.wsgi.application'
+WSGI_APPLICATION = 'smartcity_app.wsgi.application' # 🛠️ UBAHAN 3: Referensi folder diubah ke smartcity_app 
 
 # DATABASE (PostgreSQL)
 DATABASES = {
@@ -88,6 +88,7 @@ USE_TZ = True
 
 # STATIC FILES
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles' # 🛠️ UBAHAN 4: Menambahkan Static Root untuk deployment 
 
 # DEFAULT AUTO FIELD
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -112,4 +113,4 @@ REST_FRAMEWORK = {
 
 # 🔥 BARU: Konfigurasi akses CORS (Ditaruh di paling bawah)
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True # Mengizinkan semua domain untuk mengakses API
+CORS_ALLOW_ALL_ORIGINS = True # Mengizinkan semua domain untuk mengakses API [cite: 52]

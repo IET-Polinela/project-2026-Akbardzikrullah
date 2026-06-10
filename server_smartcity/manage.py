@@ -6,7 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'p24782035_iet_2026.settings')
+    # BARIS DI BAWAH INI SUDAH DIUBAH MENGARAH KE smartcity_app
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'smartcity_app.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
