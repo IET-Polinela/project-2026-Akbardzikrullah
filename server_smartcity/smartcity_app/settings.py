@@ -64,9 +64,9 @@ WSGI_APPLICATION = 'smartcity_app.wsgi.application' # 🛠️ UBAHAN 3: Referens
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'smartcity_db',
-        'USER': 'postgres',
-        'PASSWORD': 'akbar123',  # ganti kalau beda
+        'NAME': 'db_mhs04',
+        'USER': 'user_mhs04',
+        'PASSWORD': 'mhs04',  # ganti kalau beda
         'HOST': 'localhost',
         'PORT': '5432',
     }
