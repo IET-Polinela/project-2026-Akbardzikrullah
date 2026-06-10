@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 SECRET_KEY = 'django-insecure-%j_c-&4e-fsl%_1c9qbh8dfx3v)$gh-z=l^_#w2lke46-mgnw6'
 DEBUG = True
-ALLOWED_HOSTS = ['*'] # 🛠️ UBAHAN 1: Diubah agar bisa diakses oleh server luar 
+ALLOWED_HOSTS = ['103.151.63.85', 'localhost', '127.0.0.1']
 
 # APPLICATIONS
 INSTALLED_APPS = [
@@ -113,4 +113,6 @@ REST_FRAMEWORK = {
 
 # 🔥 BARU: Konfigurasi akses CORS (Ditaruh di paling bawah)
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = True # Mengizinkan semua domain untuk mengakses API [cite: 52]
+CORS_ALLOW_ALL_ORIGINS = [
+    "https://iet-polinela.github.io",
+]
