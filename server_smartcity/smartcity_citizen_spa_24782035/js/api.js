@@ -1,5 +1,5 @@
 // Sesuaikan dengan URL server Django kamu
-const BASE_URL = "http://103.151.63.85:8000";
+const BASE_URL = "http://103.151.63.85:8004";
 
 async function requestAPI(endpoint, method = 'GET', bodyData = null) {
     // 1. Ambil access_token dari penyimpanan lokal browser
