@@ -113,6 +113,6 @@ REST_FRAMEWORK = {
 
 # 🔥 BARU: Konfigurasi akses CORS (Ditaruh di paling bawah)
 # CORS Settings
-CORS_ALLOWED_ORIGINS = [
-    "https://iet-polinela.github.io",
-]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
