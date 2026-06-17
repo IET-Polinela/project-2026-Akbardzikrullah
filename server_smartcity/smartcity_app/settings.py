@@ -18,6 +18,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
+    
+    # 🚀 LANGKAH 2: Menambahkan Library Skema Otomatis & Visualizer UI Dokumentasi
+    'drf_spectacular',  
+    'django_scalar',    
+    
     'corsheaders', # 🔥 BARU: Tambahkan corsheaders di sini
 
     # APP KAMU
@@ -101,6 +106,7 @@ LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/reports/'
 
 
+# 🚀 LANGKAH 3: Konfigurasi Default Schema Class DRF agar terintegrasi dengan drf-spectacular
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -108,11 +114,19 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', # 🛠️ Menambahkan engine introspeksi skema otomatis
 }
 
-# 🔥 BARU: Konfigurasi akses CORS (Ditaruh di paling bawah)
+# 🔥 Konfigurasi akses CORS (Ditaruh di paling bawah)
 # CORS Settings
-
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
+
+# 🚀 LANGKAH 4: Pengaturan Metadata Dokumentasi OpenAPI 3.0
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Smart City Portal API',
+    'DESCRIPTION': 'Dokumentasi REST API resmi untuk Portal Pelaporan Laporan Warga',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}

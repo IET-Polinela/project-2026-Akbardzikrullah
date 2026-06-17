@@ -7,6 +7,10 @@ from usermanagement_24782035.views import login_view, logout_view, register
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from usermanagement_24782035.api_views import RegisterView
 
+# 🚀 LANGKAH 5: Import modul view milik Spectacular dan Scalar untuk dokumentasi API
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django_scalar.views import scalar_viewer
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -37,4 +41,16 @@ urlpatterns += [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     # 👇 Ini dia tambahan endpoint buat register via API
     path('api/register/', RegisterView.as_view(), name='api_register'), 
+]
+
+# 🚀 LANGKAH 5: Tambahan rute eksekusi skema dan visualisasi UI OpenAPI 3.0
+urlpatterns += [
+    # 1. Endpoint untuk meng-generate file skema mentah (JSON/YAML)
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    
+    # 2. Endpoint Swagger UI (Uji coba interaktif)
+    path('api/docs/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    
+    # 3. Endpoint Scalar UI (Dokumentasi modern dark-mode)
+    path('api/docs/scalar/', scalar_viewer, name='scalar-ui'),
 ]
