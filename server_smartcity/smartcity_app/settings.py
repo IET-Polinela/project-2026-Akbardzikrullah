@@ -47,11 +47,28 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# 🛠️ GANTI MENJADI INI
+# FOLDER PATHS
 ROOT_URLCONF = 'smartcity_app.urls'
 WSGI_APPLICATION = 'smartcity_app.wsgi.application'
 
-# 🛠️ DATABASE (DIPAKSA SQLITE UNTUK STABILITAS DEPLOYMENT)
+# TEMPLATES (DITAMBAHKAN KONFIGURASI LENGKAP UNTUK FIX ERROR ADMIN)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+# DATABASE
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -97,7 +114,7 @@ REST_FRAMEWORK = {
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 
 # SPECTACULAR
 SPECTACULAR_SETTINGS = {
