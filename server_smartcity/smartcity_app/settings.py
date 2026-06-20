@@ -47,9 +47,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# 🛠️ SESUAIKAN DENGAN NAMA FOLDER PROYEK KAMU
-ROOT_URLCONF = 'server_smartcity.urls'
-WSGI_APPLICATION = 'server_smartcity.wsgi.application'
+# 🛠️ GANTI MENJADI INI
+ROOT_URLCONF = 'smartcity_app.urls'
+WSGI_APPLICATION = 'smartcity_app.wsgi.application'
 
 # 🛠️ DATABASE (DIPAKSA SQLITE UNTUK STABILITAS DEPLOYMENT)
 DATABASES = {
