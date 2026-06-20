@@ -5,6 +5,9 @@ from .models import Report
 from .serializers import ReportSerializer
 from .permissions import IsOwnerAndDraftOrReadOnly
 
+# 🚀 LANGKAH 1: Import decorator extend_schema dari drf_spectacular
+from drf_spectacular.utils import extend_schema
+
 # === TAMBAHAN BARU: Class Pagination ===
 class ReportPagination(PageNumberPagination):
     page_size = 10                   # Setiap halaman maksimal 10 data
@@ -42,3 +45,8 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(reporter=self.request.user)
+
+    # 🚀 LANGKAH 2: Tambahkan fungsi destroy (DELETE) dan beri jubah gaib di atasnya
+    @extend_schema(exclude=True)
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)

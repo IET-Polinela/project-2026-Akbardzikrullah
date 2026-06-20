@@ -147,7 +147,7 @@ def search_reports(request):
 
 # 📦 DETAIL MODAL API
 # 🚀 LANGKAH 2: Pasang decorator exclude tepat di atas fungsi API detail modal
-@extend_schema(exclude=True)
+# 📦 DETAIL MODAL API (Kembali normal tanpa decorator)
 def report_detail_api(request, pk):
     report = get_object_or_404(Report, pk=pk)
 

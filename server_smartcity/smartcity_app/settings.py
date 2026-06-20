@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys  # 🚀 Tambahan untuk mendeteksi mode lokal/vps
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -71,17 +72,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'smartcity_app.wsgi.application' # 🛠️ UBAHAN 3: Referensi folder diubah ke smartcity_app 
 
-# DATABASE (PostgreSQL)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_mhs04',
-        'USER': 'user_mhs04',
-        'PASSWORD': 'mhs04',  # ganti kalau beda
-        'HOST': 'localhost',
-        'PORT': '5432',
+# 🛠️ DATABASE AMAN & DINAMIS (Mendeteksi mode lokal laptop vs VPS secara akurat)
+# Jika perintah mengandung kata 'runserver' ATAU 'migrate' ATAU 'makemigrations', otomatis pakai SQLite3 lokal
+if any(cmd in sys.argv for cmd in ['runserver', 'migrate', 'makemigrations']):
+    # 💻 JALUR KILAT LOKAL LAPTOP: Pakai SQLite3 biar langsung jalan tanpa install database tambahan
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # 🌐 JALUR VPS KAMPUS: Otomatis tetap pakai PostgreSQL asli server kamu saat dijalankan via Gunicorn
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'db_mhs04',
+            'USER': 'user_mhs04',
+            'PASSWORD': 'mhs04',  
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
