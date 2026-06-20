@@ -8,6 +8,12 @@ SECRET_KEY = 'django-insecure-%j_c-&4e-fsl%_1c9qbh8dfx3v)$gh-z=l^_#w2lke46-mgnw6
 DEBUG = True
 ALLOWED_HOSTS = ['103.151.63.85', 'localhost', '127.0.0.1']
 
+# 🔥 FIX ERROR 403: Tambahkan konfigurasi ini tepat di bawah ALLOWED_HOSTS
+CSRF_TRUSTED_ORIGINS = [
+    'http://103.151.63.85:8004',
+    'http://103.151.63.85',
+]
+
 # APPLICATIONS
 INSTALLED_APPS = [
     'django.contrib.admin',
