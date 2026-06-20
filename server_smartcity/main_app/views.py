@@ -7,6 +7,9 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.db.models import Q
 
+# 🚀 LANGKAH 1: Import decorator extend_schema dari drf_spectacular
+from drf_spectacular.utils import extend_schema
+
 from .models import Report
 from .forms import ReportForm
 
@@ -143,6 +146,8 @@ def search_reports(request):
 
 
 # 📦 DETAIL MODAL API
+# 🚀 LANGKAH 2: Pasang decorator exclude tepat di atas fungsi API detail modal
+@extend_schema(exclude=True)
 def report_detail_api(request, pk):
     report = get_object_or_404(Report, pk=pk)
 
