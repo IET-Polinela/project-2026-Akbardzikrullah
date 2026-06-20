@@ -1,5 +1,5 @@
 from pathlib import Path
-import sys  # 🚀 Tambahan untuk mendeteksi mode lokal/vps
+import os
 
 # Base directory
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +9,7 @@ SECRET_KEY = 'django-insecure-%j_c-&4e-fsl%_1c9qbh8dfx3v)$gh-z=l^_#w2lke46-mgnw6
 DEBUG = True
 ALLOWED_HOSTS = ['103.151.63.85', 'localhost', '127.0.0.1']
 
-# 🔥 FIX ERROR 403: Tambahkan konfigurasi ini tepat di bawah ALLOWED_HOSTS
+# CSRF
 CSRF_TRUSTED_ORIGINS = [
     'http://103.151.63.85:8004',
     'http://103.151.63.85',
@@ -25,14 +25,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    
-    # 🚀 LANGKAH 2: Menambahkan Library Skema Otomatis & Visualizer UI Dokumentasi
-    'drf_spectacular',  
-    'django_scalar',    
-    
-    'corsheaders', # 🔥 BARU: Tambahkan corsheaders di sini
-
-    # APP KAMU
+    'drf_spectacular',
+    'django_scalar',
+    'corsheaders',
     'main_app',
     'about',
     'contacts',
@@ -42,7 +37,7 @@ INSTALLED_APPS = [
 
 # MIDDLEWARE
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', # 🔥 BARU: Wajib diletakkan paling atas!
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -52,48 +47,17 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'smartcity_app.urls' # 🛠️ UBAHAN 2: Referensi folder diubah ke smartcity_app 
+# 🛠️ SESUAIKAN DENGAN NAMA FOLDER PROYEK KAMU
+ROOT_URLCONF = 'server_smartcity.urls'
+WSGI_APPLICATION = 'server_smartcity.wsgi.application'
 
-# TEMPLATES
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # 🔥 penting untuk login.html
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = 'smartcity_app.wsgi.application' # 🛠️ UBAHAN 3: Referensi folder diubah ke smartcity_app 
-
-# 🛠️ DATABASE AMAN & DINAMIS (Mendeteksi mode lokal laptop vs VPS secara akurat)
-# Jika perintah mengandung kata 'runserver' ATAU 'migrate' ATAU 'makemigrations', otomatis pakai SQLite3 lokal
-if any(cmd in sys.argv for cmd in ['runserver', 'migrate', 'makemigrations']):
-    # 💻 JALUR KILAT LOKAL LAPTOP: Pakai SQLite3 biar langsung jalan tanpa install database tambahan
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+# 🛠️ DATABASE (DIPAKSA SQLITE UNTUK STABILITAS DEPLOYMENT)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    # 🌐 JALUR VPS KAMPUS: Otomatis tetap pakai PostgreSQL asli server kamu saat dijalankan via Gunicorn
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'db_mhs04',
-            'USER': 'user_mhs04',
-            'PASSWORD': 'mhs04',  
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
+}
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
@@ -111,20 +75,15 @@ USE_TZ = True
 
 # STATIC FILES
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles' # 🛠️ UBAHAN 4: Menambahkan Static Root untuk deployment 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# DEFAULT AUTO FIELD
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# CUSTOM USER MODEL
 AUTH_USER_MODEL = 'usermanagement_24782035.CustomUser'
 
-# LOGIN & LOGOUT REDIRECT
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/reports/'
 
-
-# 🚀 LANGKAH 3: Konfigurasi Default Schema Class DRF agar terintegrasi dengan drf-spectacular
+# REST FRAMEWORK
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
@@ -133,15 +92,14 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', # 🛠️ Menambahkan engine introspeksi skema otomatis
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# 🔥 Konfigurasi akses CORS (Ditaruh di paling bawah)
-# CORS Settings
+# CORS
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ORIGIN_ALLOW_ALL = True
 
-# 🚀 LANGKAH 4: Pengaturan Metadata Dokumentasi OpenAPI 3.0
+# SPECTACULAR
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Smart City Portal API',
     'DESCRIPTION': 'Dokumentasi REST API resmi untuk Portal Pelaporan Laporan Warga',
