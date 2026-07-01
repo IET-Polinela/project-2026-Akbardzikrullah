@@ -1,11 +1,16 @@
 from django.views.generic import TemplateView
 from django.http import JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from main_app.models import Report
 from django.db.models import Count
 
 
-class DashboardView(TemplateView):
+class DashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = 'dashboard/index.html'
+    
+    def test_func(self):
+        """Only staff/admin can access dashboard"""
+        return self.request.user.is_staff or self.request.user.is_admin
 
 
 def dashboard_data(request):

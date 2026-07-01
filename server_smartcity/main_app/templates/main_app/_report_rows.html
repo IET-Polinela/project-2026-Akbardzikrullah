@@ -5,15 +5,15 @@
     <td>{{ report.location }}</td>
 
     <td>
-        {% if report.status == 'DRAFT' %}
+        {% if report.status == 'DRAFT' or report.status == 'Draft' or report.status == 'draft' %}
             <span class="badge bg-light text-dark border border-secondary">Draft</span>
-        {% elif report.status == 'REPORTED' %}
+        {% elif report.status == 'REPORTED' or report.status == 'Reported' or report.status == 'reported' %}
             <span class="badge bg-secondary">Reported</span>
-        {% elif report.status == 'VERIFIED' %}
+        {% elif report.status == 'VERIFIED' or report.status == 'Verified' or report.status == 'verified' %}
             <span class="badge bg-info text-dark">Verified</span>
-        {% elif report.status == 'IN_PROGRESS' %}
+        {% elif report.status == 'IN_PROGRESS' or report.status == 'In Progress' or report.status == 'in_progress' %}
             <span class="badge bg-warning text-dark">In Progress</span>
-        {% elif report.status == 'RESOLVED' %}
+        {% elif report.status == 'RESOLVED' or report.status == 'Resolved' or report.status == 'resolved' %}
             <span class="badge bg-success">Resolved</span>
         {% endif %}
     </td>
@@ -22,32 +22,34 @@
         <div class="d-flex flex-nowrap align-items-center gap-1">
 
             {% if user.is_authenticated and user.is_admin %}
-
-                {% if report.status == 'REPORTED' %}
+                {% if report.status.upper == 'REPORTED' %}
                     <form action="{% url 'main_app:update_status' report.id %}" method="post" class="m-0">
                         {% csrf_token %}
                         <input type="hidden" name="status" value="VERIFIED">
                         <button class="btn btn-success btn-sm">Verifikasi</button>
                     </form>
-
-                {% elif report.status == 'VERIFIED' %}
+                {% elif report.status.upper == 'VERIFIED' %}
                     <form action="{% url 'main_app:update_status' report.id %}" method="post" class="m-0">
                         {% csrf_token %}
                         <input type="hidden" name="status" value="IN_PROGRESS">
                         <button class="btn btn-warning btn-sm">Proses</button>
                     </form>
-
-                {% elif report.status == 'IN_PROGRESS' %}
+                {% elif report.status.upper == 'IN_PROGRESS' %}
                     <form action="{% url 'main_app:update_status' report.id %}" method="post" class="m-0">
                         {% csrf_token %}
                         <input type="hidden" name="status" value="RESOLVED">
                         <button class="btn btn-primary btn-sm">Selesai</button>
                     </form>
                 {% endif %}
-
             {% endif %}
 
-            {% if user.is_authenticated and request.user == report.reporter %}
+            {% if user.is_authenticated and not user.is_admin %}
+                
+                <form action="{% url 'main_app:report_submit_reported' report.id %}" method="post" class="m-0">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success btn-sm">Ajukan</button>
+                </form>
+
                 <a href="{% url 'main_app:report_update' report.id %}" class="btn btn-warning btn-sm">
                     Edit
                 </a>

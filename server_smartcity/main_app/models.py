@@ -9,6 +9,15 @@ STATUS_CHOICES = [
     ('RESOLVED', 'Resolved'),
 ]
 
+# State machine definitions
+VALID_TRANSITIONS = {
+    'DRAFT': ['REPORTED'],
+    'REPORTED': ['VERIFIED'],
+    'VERIFIED': ['IN_PROGRESS'],
+    'IN_PROGRESS': ['RESOLVED'],
+    'RESOLVED': [],  # Final state, no transitions
+}
+
 class Report(models.Model):
     title = models.CharField(max_length=200)
     category = models.CharField(max_length=100)
@@ -34,3 +43,7 @@ class Report(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def get_next_valid_states(self):
+        """Returns list of valid next states for current status"""
+        return VALID_TRANSITIONS.get(self.status, [])

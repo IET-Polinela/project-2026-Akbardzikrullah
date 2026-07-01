@@ -145,8 +145,6 @@ def search_reports(request):
     return JsonResponse({'html': html})
 
 
-# 📦 DETAIL MODAL API
-# 🚀 LANGKAH 2: Pasang decorator exclude tepat di atas fungsi API detail modal
 # 📦 DETAIL MODAL API (Kembali normal tanpa decorator)
 def report_detail_api(request, pk):
     report = get_object_or_404(Report, pk=pk)
@@ -160,3 +158,23 @@ def report_detail_api(request, pk):
     }
 
     return JsonResponse(data)
+
+
+# 🚀 5. FITUR BARU KHUSUS CITIZEN: Mengubah status DRAFT menjadi REPORTED
+class ReportSubmitToReportedView(View):
+    def post(self, request, pk):
+        if not request.user.is_authenticated:
+            messages.error(request, "❌ Anda harus login terlebih dahulu!")
+            return redirect('main_app:report_list')
+
+        # Ambil laporan berdasarkan ID dan pastikan pemiliknya adalah user yang sedang login
+        report = get_object_or_404(Report, pk=pk, reporter=request.user)
+
+        if report.status == 'DRAFT':
+            report.status = 'REPORTED'
+            report.save()
+            messages.success(request, "🚀 Laporan berhasil diajukan ke Pemerintah Kota!")
+        else:
+            messages.error(request, "❌ Laporan ini sudah diajukan atau diproses.")
+
+        return redirect('main_app:report_list')

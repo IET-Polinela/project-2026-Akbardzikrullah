@@ -40,13 +40,21 @@ class ReportViewSet(viewsets.ModelViewSet):
         elif tab == 'feed':
             # Tab "Feed Kota": laporan dari warga LAIN yang BUKAN DRAFT
             queryset = queryset.filter(~Q(reporter=user) & ~Q(status='DRAFT'))
+        
+        else:
+            # Default: hide DRAFT reports from non-owners (for retrieve/detail action)
+            # Show all of user's own reports (including DRAFT)
+            # Show only non-DRAFT reports from others
+            queryset = queryset.filter(
+                Q(reporter=user) | ~Q(status='DRAFT')
+            )
 
         return queryset
 
     def perform_create(self, serializer):
         serializer.save(reporter=self.request.user)
 
-    # 🚀 LANGKAH 2: Tambahkan fungsi destroy (DELETE) dan beri jubah gaib di atasnya
+    
     @extend_schema(exclude=True)
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
