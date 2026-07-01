@@ -51,7 +51,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'smartcity_app.urls'
 WSGI_APPLICATION = 'smartcity_app.wsgi.application'
 
-# TEMPLATES (DITAMBAHKAN KONFIGURASI LENGKAP UNTUK FIX ERROR ADMIN)
+# TEMPLATES
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -97,8 +97,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'usermanagement_24782035.CustomUser'
 
+# LOGIN CONFIGURATIONS
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/reports/'
+
 
 # REST FRAMEWORK
 REST_FRAMEWORK = {

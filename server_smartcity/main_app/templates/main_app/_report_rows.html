@@ -5,15 +5,15 @@
     <td>{{ report.location }}</td>
 
     <td>
-        {% if report.status.upper == 'DRAFT' or report.status.upper == 'REPORTED' %}
+        {% if report.status.upper == 'DRAFT' %}
             <span class="badge bg-light text-dark border border-secondary">Draft</span>
-        {% elif report.status == 'REPORTED' %}
+        {% elif report.status.upper == 'REPORTED' %}
             <span class="badge bg-secondary">Reported</span>
-        {% elif report.status == 'VERIFIED' %}
+        {% elif report.status.upper == 'VERIFIED' %}
             <span class="badge bg-info text-dark">Verified</span>
-        {% elif report.status == 'IN_PROGRESS' %}
+        {% elif report.status.upper == 'IN_PROGRESS' %}
             <span class="badge bg-warning text-dark">In Progress</span>
-        {% elif report.status == 'RESOLVED' %}
+        {% elif report.status.upper == 'RESOLVED' %}
             <span class="badge bg-success">Resolved</span>
         {% endif %}
     </td>
@@ -22,57 +22,44 @@
         <div class="d-flex flex-nowrap align-items-center gap-1">
 
             {% if user.is_authenticated and user.is_admin %}
-
-                {% if report.status == 'REPORTED' %}
+                {% if report.status.upper == 'REPORTED' %}
                     <form action="{% url 'main_app:update_status' report.id %}" method="post" class="m-0">
                         {% csrf_token %}
                         <input type="hidden" name="status" value="VERIFIED">
                         <button class="btn btn-success btn-sm">Verifikasi</button>
                     </form>
-
-                {% elif report.status == 'VERIFIED' %}
+                {% elif report.status.upper == 'VERIFIED' %}
                     <form action="{% url 'main_app:update_status' report.id %}" method="post" class="m-0">
                         {% csrf_token %}
                         <input type="hidden" name="status" value="IN_PROGRESS">
                         <button class="btn btn-warning btn-sm">Proses</button>
                     </form>
-
-                {% elif report.status == 'IN_PROGRESS' %}
+                {% elif report.status.upper == 'IN_PROGRESS' %}
                     <form action="{% url 'main_app:update_status' report.id %}" method="post" class="m-0">
                         {% csrf_token %}
                         <input type="hidden" name="status" value="RESOLVED">
                         <button class="btn btn-primary btn-sm">Selesai</button>
                     </form>
                 {% endif %}
-
             {% endif %}
 
             {% if user.is_authenticated and request.user == report.reporter %}
                 
-                {% if report.status == 'DRAFT' %}
+                {% if report.status.upper == 'DRAFT' %}
                     <form action="{% url 'main_app:report_submit_reported' report.id %}" method="post" class="m-0">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-success btn-sm">Ajukan</button>
                     </form>
                 {% endif %}
 
-                <a href="{% url 'main_app:report_update' report.id %}" class="btn btn-warning btn-sm">
-                    Edit
-                </a>
-
-                <a href="{% url 'main_app:report_delete' report.id %}" class="btn btn-danger btn-sm">
-                    Hapus
-                </a>
+                <a href="{% url 'main_app:report_update' report.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'main_app:report_delete' report.id %}" class="btn btn-danger btn-sm">Hapus</a>
             {% endif %}
 
-            <button class="btn btn-info btn-sm text-white btn-detail" data-id="{{ report.id }}">
-                Detail
-            </button>
-
+            <button class="btn btn-info btn-sm text-white btn-detail" data-id="{{ report.id }}">Detail</button>
         </div>
     </td>
 </tr>
-
 {% empty %}
 <tr>
     <td colspan="5" class="text-center">Data tidak ditemukan</td>
