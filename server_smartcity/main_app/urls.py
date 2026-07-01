@@ -6,6 +6,7 @@ from .views import (
     ReportUpdateView,
     ReportDeleteView,
     ReportUpdateStatusView,
+    ReportSubmitToReportedView,  # 1. Tambahkan ini
     search_reports,
     report_detail_api
 )
@@ -19,6 +20,9 @@ urlpatterns = [
     path('edit/<int:pk>/', ReportUpdateView.as_view(), name='report_update'),
     path('delete/<int:pk>/', ReportDeleteView.as_view(), name='report_delete'),
     path('update-status/<int:pk>/', ReportUpdateStatusView.as_view(), name='update_status'),
+    
+    # 2. Tambahkan baris ini agar error NoReverseMatch hilang!
+    path('submit-reported/<int:pk>/', ReportSubmitToReportedView.as_view(), name='report_submit_reported'),
 
     # 🔥 AJAX
     path('search/', search_reports, name='search_reports'),
